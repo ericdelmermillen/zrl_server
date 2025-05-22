@@ -27,7 +27,6 @@ app.use('/api/auth', authRouter);
 
 
 
-
 // Routers
 // authRouter for createUser, login, logout, AWS signed url
 app.use('/api/auth', authRouter);
