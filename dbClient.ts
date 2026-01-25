@@ -1,17 +1,22 @@
 import { Pool } from "pg";
-import dotenv from "dotenv";
-dotenv.config();
 
 const HOST = process.env.DB_HOST;
 const USER = process.env.DB_USER;
 const PASSWORD = process.env.DB_PASSWORD; 
 const DATABASE = process.env.DB_DATABASE;
-const DB_CONNECTION_LIMIT =
-  parseInt(process.env.DB_CONNECTION_LIMIT || "10", 10);
+const DB_CONNECTION_LIMIT = parseInt(
+  process.env.DB_CONNECTION_LIMIT ?? "10",
+  10
+);
+
 
 if (!HOST || !USER || !DATABASE) {
   throw new Error("Missing required database environment variables.");
-}
+};
+
+if (Number.isNaN(DB_CONNECTION_LIMIT)) {
+  throw new Error("DB_CONNECTION_LIMIT must be a number");
+};
 
 // Create Postgres connection pool
 const pool = new Pool({
@@ -24,9 +29,9 @@ const pool = new Pool({
 });
 
 // Test connection when pool is created
-export async function initDb() {
+export const initDb = async () => {
   await pool.query("SELECT 1");
-  console.log("Postgres connected");
-}
+  console.log("Postgres db connected");
+};
 
 export default pool;

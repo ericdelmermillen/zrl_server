@@ -1,11 +1,18 @@
 import express from "express";
-import { createUser, loginUser, logoutUser, refreshToken } from "../controllers/authController";
+import { 
+  createUser, 
+  loginUser, 
+  logoutUser, 
+  refreshToken 
+} from "../controllers/authController";
 import { 
   validateRequest,
   emailAndPasswordAreValid
  } from "../middleware/validationSchemas";
 
+
 const authRouter = express.Router();
+
 
 // POST /api/auth/createuser
 authRouter.route('/createuser')

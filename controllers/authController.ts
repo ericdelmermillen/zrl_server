@@ -1,3 +1,4 @@
+// typing for req & res objs
 import { Request, Response } from "express";
 // import { decodeJWT,getFreshTokens } from "../utils/utils.mjs";
 import bcrypt from "bcrypt";
@@ -53,7 +54,7 @@ const createUser = async (req: Request, res: Response) => {
     );
 
     return res.status(201).json({
-      success: false,
+      success: true,
       message: "User created successfully",
     });
   } catch (error: any) {

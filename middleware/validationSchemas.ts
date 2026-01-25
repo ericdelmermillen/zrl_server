@@ -4,7 +4,11 @@ import {
   validationResult, 
   ValidationChain
  } from "express-validator";
-import { Request, Response, NextFunction } from "express";
+import { 
+  Request, 
+  Response, 
+  NextFunction 
+} from "express";
 
 
 const validateRequest =
@@ -45,4 +49,4 @@ const emailAndPasswordAreValid = [
 export {
   validateRequest,
   emailAndPasswordAreValid
-}
+};
