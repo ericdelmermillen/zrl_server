@@ -1,9 +1,6 @@
-// IMPORTANT (ESM + tsx):
-// We must use `import "dotenv/config"` instead of calling `dotenv.config()`
-// in runtime code. In ESM, all static imports (including dbClient) are
-// executed BEFORE any top-level code in this file runs. Using the side-effect
-// import ensures environment variables are loaded during module initialization,
-// so `process.env.*` is defined when dbClient is imported.
+// use `import "dotenv/config"` instead of calling `dotenv.config()`
+// in runtime code; in ESM, all static imports are executed BEFORE any top-level code in this file runs
+// using side-effect import ensures environment variables are loaded during module initialization so process.env is imported centrally here
 import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";

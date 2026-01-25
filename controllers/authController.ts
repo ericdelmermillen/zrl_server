@@ -2,11 +2,8 @@
 import { Request, Response } from "express";
 // import { decodeJWT,getFreshTokens } from "../utils/utils.mjs";
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
 // import jwt from "jsonwebtoken";
 import pool from "../dbClient";
-
-dotenv.config();
 
 
 // sample cookie options object; not secure, for illustration purposes only
@@ -21,12 +18,8 @@ const cookieOptions = {
 // POST /api/auth/createuser
 const createUser = async (req: Request, res: Response) => {
   const { email, password } = req.body as {
-    email?: unknown;
-    password?: unknown;
-  };
-
-  if (typeof email !== "string" || typeof password !== "string") {
-    return res.status(400).json({ message: "Invalid email or password" });
+    email: string;
+    password: string
   };
 
   const normalizedEmail = email.trim().toLowerCase();
@@ -74,14 +67,17 @@ const createUser = async (req: Request, res: Response) => {
 
 // POST /api/auth/createuser
 const loginUser = async (req: Request, res: Response) => {
-  // these will come in in the cookie
-  // const { email, password } = req.body;
+  const { email, password } = req.body as {
+    email: string;
+    password: string;
+  };
+
   // console.log(email, password)
 
 
-//   // res.cookie("testKeyUno", "testValueUno", cookieOptions);
-//   // res.cookie("testKeyDos", "testValueDos", cookieOptions);
-//   // res.cookie("testKeyTres", "testValueTres", cookieOptions);
+// res.cookie("testKeyUno", "testValueUno", cookieOptions);
+// res.cookie("testKeyDos", "testValueDos", cookieOptions);
+// res.cookie("testKeyTres", "testValueTres", cookieOptions);
 
 
   // Placeholder response
