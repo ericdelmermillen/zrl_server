@@ -1,10 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
+import { initDb } from "./dbClient";
 
-import express from 'express';
-// import helmet from 'helmet';
-// import rateLimit from 'express-rate-limit';
-import cors from 'cors';
+import express from "express";
+import cookieParser from "cookie-parser";
+// import helmet from "helmet";
+// import rateLimit from "express-rate-limit";
+import cors from "cors";
 
 const app = express();
 
@@ -18,18 +20,21 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 // app.use(helmet());
 
 
+// routes
 import authRouter from "./routes/authRoute";
 
-app.use('/api/auth', authRouter);
+
+app.use("/api/auth", authRouter);
 
 
 
 // Routers
 // authRouter for createUser, login, logout, AWS signed url
-app.use('/api/auth', authRouter);
+app.use("/api/auth", authRouter);
 
 
 
@@ -41,4 +46,7 @@ const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT} 🚀 in ${environment} environment`);
+
+  // initialize db on every save in development
+  environment === "development" && initDb()
 });
