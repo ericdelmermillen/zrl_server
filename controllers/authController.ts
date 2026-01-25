@@ -53,11 +53,13 @@ const createUser = async (req: Request, res: Response) => {
     );
 
     return res.status(201).json({
+      success: false,
       message: "User created successfully",
     });
   } catch (error: any) {
     if (error?.code === "23505") {
       return res.status(409).json({
+        success: false,
         message: "A user with that email already exists",
       });
     };
