@@ -10,7 +10,6 @@ import {
   emailAndPasswordAreValid
  } from "../middleware/validationSchemas";
 
-
 const authRouter = express.Router();
 
 
@@ -23,7 +22,9 @@ authRouter.route('/createuser')
 
 // POST /api/auth/loginuser
 authRouter.route("/loginuser")
-  .post(loginUser);
+  .post(
+    validateRequest(emailAndPasswordAreValid),
+    loginUser);
 
 
 // POST /api/auth/refreshtoken
@@ -35,5 +36,5 @@ authRouter.route("/logoutuser")
   .post(logoutUser);
 
   
-  
-  export default authRouter;
+
+export default authRouter;

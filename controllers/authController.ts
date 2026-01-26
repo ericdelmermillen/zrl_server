@@ -2,18 +2,21 @@
 import { Request, Response } from "express";
 // import { decodeJWT,getFreshTokens } from "../utils/utils.mjs";
 import bcrypt from "bcrypt";
-// import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import pool from "../dbClient";
 
 
-// sample cookie options object; not secure, for illustration purposes only
-const cookieOptions = {
-  httpOnly: false,
-  secure: false,
-  sameSite: "lax" as const,
-  path: "/",
-};
+const isProduction = process.env.NODE_ENV === "production";
 
+// maxAge should be set separately for the token and refresh token
+const cookieOptions = {
+  httpOnly: true,                // should be true in both envs
+  secure: isProduction,          // HTTPS only in prod
+  sameSite: isProduction ? "none" : "lax",
+  path: "/",
+  // add when you want persistence:
+  // maxAge: 60 * 60 * 1000, // 1 hour
+} as const;
 
 // POST /api/auth/createuser
 const createUser = async (req: Request, res: Response) => {
@@ -63,8 +66,6 @@ const createUser = async (req: Request, res: Response) => {
 };
 
 
-
-
 // POST /api/auth/createuser
 const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body as {
@@ -72,16 +73,69 @@ const loginUser = async (req: Request, res: Response) => {
     password: string;
   };
 
-  // console.log(email, password)
+  const normalizedEmail = email.trim().toLowerCase();
+  
+  try {
+    const result = await pool.query(
+      `
+      SELECT id, email, hashed_password
+      FROM users
+      WHERE email = $1
+      `,
+      [normalizedEmail]
+    );
 
+    if (result.rowCount === 0) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    };
 
-// res.cookie("testKeyUno", "testValueUno", cookieOptions);
-// res.cookie("testKeyDos", "testValueDos", cookieOptions);
-// res.cookie("testKeyTres", "testValueTres", cookieOptions);
+    const user = result.rows[0];
 
+    const passwordMatches = await bcrypt.compare(
+      password,
+      user.hashed_password
+    );
 
-  // Placeholder response
-  res.json({message: "From loginUser"});
+    if (!passwordMatches) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    };
+    
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+      throw new Error("JWT_SECRET is not defined");
+    };
+
+    const payload = {
+      userId: user.id,
+      email: user.email
+    };
+
+    const signOptions: SignOptions = {
+      expiresIn: "1h"
+    };
+
+    const token = jwt.sign(payload, jwtSecret, signOptions);
+
+    res.cookie("token", token, cookieOptions);
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful"
+    });
+  } catch (error) {
+    console.error("Login failed:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Login failed"
+    });
+  };
 };
 
 
