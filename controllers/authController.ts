@@ -155,8 +155,6 @@ const logoutUser = async (req: Request, res: Response) => {
 
 
 
-
-
 export {
   createUser,
   loginUser,
