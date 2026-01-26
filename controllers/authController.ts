@@ -1,8 +1,7 @@
 // typing for req & res objs
 import { Request, Response } from "express";
-// import { decodeJWT,getFreshTokens } from "../utils/utils.mjs";
+import { getToken } from "../utils/utils";
 import bcrypt from "bcrypt";
-import jwt, { SignOptions } from "jsonwebtoken";
 import pool from "../dbClient";
 
 
@@ -105,25 +104,16 @@ const loginUser = async (req: Request, res: Response) => {
         message: "Invalid email or password"
       });
     };
-    
-    const jwtSecret = process.env.JWT_SECRET;
 
-    if (!jwtSecret) {
-      throw new Error("JWT_SECRET is not defined");
-    };
+    const token = getToken(user.id, "token");
+    const refreshToken = getToken(user.id, "refreshToken");
 
-    const payload = {
-      userId: user.id,
-      email: user.email
-    };
+    const TOKEN_COOKIE_MAX_AGE_MS = 15 * 60 * 1000; // 15m
+    const REFRESH_COOKIE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 1d
 
-    const signOptions: SignOptions = {
-      expiresIn: "1h"
-    };
+    res.cookie("token", token, { ...cookieOptions, maxAge: TOKEN_COOKIE_MAX_AGE_MS });
+    res.cookie("refreshToken", refreshToken, { ...cookieOptions, maxAge: REFRESH_COOKIE_MAX_AGE_MS });
 
-    const token = jwt.sign(payload, jwtSecret, signOptions);
-
-    res.cookie("token", token, cookieOptions);
 
     return res.status(200).json({
       success: true,

@@ -1,0 +1,1 @@
+export type TokenType = "token" | "refreshToken";
