@@ -2,6 +2,7 @@ import express from "express";
 import { 
   createUser, 
   loginUser, 
+  checkSessionStatus,
   logoutUser, 
   refreshToken 
 } from "../controllers/authController";
@@ -19,6 +20,9 @@ authRouter.route('/createuser')
     validateRequest(emailAndPasswordAreValid),
     createUser);
 
+// POST /api/auth/sessionstatus
+authRouter.route("/sessionstatus")
+  .post(checkSessionStatus);
 
 // POST /api/auth/loginuser
 authRouter.route("/loginuser")
@@ -36,5 +40,4 @@ authRouter.route("/logoutuser")
   .post(logoutUser);
 
   
-
 export default authRouter;

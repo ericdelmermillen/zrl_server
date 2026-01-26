@@ -6,12 +6,13 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRouter from "./routes/authRoute";
 import { initDb } from "./dbClient";
+import { isProduction } from "./utils/constants";
 
 const app = express();
 
 // const AWS_BUCKET_BASE_PATH = process.env.AWS_BUCKET_BASE_PATH; 
 const CLIENT_HOST = process.env.CLIENT_HOST
-const environment = process.env.NODE_ENV || "development";
+const environment = isProduction ? "production" : "development";
 
 const corsOptions = { 
   origin: CLIENT_HOST, 
@@ -35,5 +36,5 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT} 🚀 in ${environment} environment`);
 
   // initialize db on every save in development
-  environment === "development" && initDb();
+  !isProduction && initDb();
 });
