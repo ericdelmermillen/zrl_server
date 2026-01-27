@@ -27,7 +27,6 @@ const validateRequest =
     next();
   };
 
-
 // for createUser and loginUser routes
 const emailAndPasswordAreValid = [
   body('email')
@@ -43,7 +42,6 @@ const emailAndPasswordAreValid = [
     .isLength({ min: 8, max: 32 })
     .withMessage("Password must be between 8-32 characters long"),
 ];
-
 
 export {
   validateRequest,

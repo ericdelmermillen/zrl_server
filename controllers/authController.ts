@@ -2,32 +2,18 @@ import { Request, Response } from "express";
 import { 
   getToken, 
   clearAuthCookies,
-  setAuthCookies,
-  convertJWTExpirationToMs } from "../utils/utilFunctions";
+  setAuthCookies
+} from "../utils/utilFunctions";
 import { 
-  isProduction,
   TOKEN_COOKIE_MAX_AGE_MS,
   REFRESH_COOKIE_MAX_AGE_MS
   } from "../utils/constants";
+  import { cookieOptions } from "../utils/configObjs";
 import bcrypt from "bcrypt";
 // ***
 import jwt from "jsonwebtoken";
 import pool from "../dbClient";
 
-
-const JWT_SECRET = process.env.JWT_SECRET!;
-const TOKEN_EXP_INT = process.env.JWT_TOKEN_EXPIRATION_INTERVAL!;
-const REFRESH_TOKEN_EXP_INT = process.env.JWT_REFRESH_TOKEN_EXPIRATION_INTERVAL!;
-
-
-// maxAge should be set separately for the token and refresh token
-// should import this from somewhere since it will be used for all token rotating on all protected calls
-const cookieOptions = {
-  httpOnly: true,                // should be true in both envs
-  secure: isProduction,          // HTTPS only in prod
-  sameSite: isProduction ? "none" : "lax",
-  path: "/",
-} as const;
 
 // POST /api/auth/createuser
 const createUser = async (req: Request, res: Response) => {
@@ -80,110 +66,117 @@ const createUser = async (req: Request, res: Response) => {
 // ***
 // POST /api/auth/sessionstatus
 const checkSessionStatus = (req: Request, res: Response) => {
-  const baseCookieOptions = {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-    path: "/",
-  } as const;
-
-  const tokenCookieOptions = {
-    ...baseCookieOptions,
-    maxAge: convertJWTExpirationToMs(TOKEN_EXP_INT),
-  };
-
-  const refreshTokenCookieOptions = {
-    ...baseCookieOptions,
-    maxAge: convertJWTExpirationToMs(REFRESH_TOKEN_EXP_INT),
-  };
-
-  const clearAuthCookies = () => {
-    res.clearCookie("token", baseCookieOptions);
-    res.clearCookie("refreshToken", baseCookieOptions);
-  };
-
-  const setAuthCookies = (userId: number) => {
-    const newToken = getToken(userId, "token");
-    const newRefreshToken = getToken(userId, "refreshToken");
-
-    res.cookie("token", newToken, tokenCookieOptions);
-    res.cookie("refreshToken", newRefreshToken, refreshTokenCookieOptions);
-  };
-
   const token = req.cookies?.token as string | undefined;
   const refreshToken = req.cookies?.refreshToken as string | undefined;
 
-  if (!token || !refreshToken) {
-    clearAuthCookies();
+  if (!refreshToken) {
+    clearAuthCookies(res, cookieOptions);
     return res.status(401).json({
       message: "No active session",
       isAuthenticated: false,
     });
-  }
+  };
 
-  try {
-    // 1. Try access token
-    const decodedToken = jwt.verify(token, JWT_SECRET) as {
-      userId: number;
-      tokenType: string;
-    };
-
-    if (decodedToken.tokenType !== "token") {
-      clearAuthCookies();
-      return res.status(401).json({
-        message: "Invalid session token",
-        isAuthenticated: false,
-      });
-    }
-
-    // Rotate on success
-    setAuthCookies(decodedToken.userId);
-
-    return res.status(200).json({
-      message: "User session active",
-      isAuthenticated: true,
-    });
-  } catch {
-    // 2. Access token failed → try refresh token
+  // If access token is missing, try refresh immediately
+  if (!token) {
     try {
-      const decodedRefreshToken = jwt.verify(refreshToken, JWT_SECRET) as {
+      const decodedRefreshToken = jwt.verify(refreshToken, process.env.JWT_SECRET!) as {
         userId: number;
         tokenType: string;
       };
 
       if (decodedRefreshToken.tokenType !== "refreshToken") {
-        clearAuthCookies();
+        clearAuthCookies(res, cookieOptions);
         return res.status(401).json({
           message: "Invalid refresh token",
           isAuthenticated: false,
         });
-      }
+      };
 
-      // Rotate on refresh success
-      setAuthCookies(decodedRefreshToken.userId);
+      setAuthCookies(
+        res,
+        decodedRefreshToken.userId,
+        cookieOptions,
+        TOKEN_COOKIE_MAX_AGE_MS,
+        REFRESH_COOKIE_MAX_AGE_MS
+      );
 
       return res.status(200).json({
         message: "User session active",
         isAuthenticated: true,
       });
     } catch {
-      clearAuthCookies();
+      clearAuthCookies(res, cookieOptions);
       return res.status(401).json({
         message: "Session expired",
         isAuthenticated: false,
       });
-    }
-  }
+    };
+  };
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: number;
+      tokenType: string;
+    };
+
+    if (decodedToken.tokenType !== "token") {
+      clearAuthCookies(res, cookieOptions);
+      return res.status(401).json({
+        message: "Invalid session token",
+        isAuthenticated: false,
+      });
+    };
+
+    // rotate on success
+    setAuthCookies(
+      res,
+      decodedToken.userId,
+      cookieOptions,
+      TOKEN_COOKIE_MAX_AGE_MS,
+      REFRESH_COOKIE_MAX_AGE_MS
+    );
+
+    return res.status(200).json({
+      message: "User session active",
+      isAuthenticated: true,
+    });
+  } catch {
+    try {
+      const decodedRefreshToken = jwt.verify(refreshToken, process.env.JWT_SECRET!) as {
+        userId: number;
+        tokenType: string;
+      };
+
+      if (decodedRefreshToken.tokenType !== "refreshToken") {
+        clearAuthCookies(res, cookieOptions);
+        return res.status(401).json({
+          message: "Invalid refresh token",
+          isAuthenticated: false,
+        });
+      };
+
+      setAuthCookies(
+        res,
+        decodedRefreshToken.userId,
+        cookieOptions,
+        TOKEN_COOKIE_MAX_AGE_MS,
+        REFRESH_COOKIE_MAX_AGE_MS
+      );
+
+      return res.status(200).json({
+        message: "User session active",
+        isAuthenticated: true,
+      });
+    } catch {
+      clearAuthCookies(res, cookieOptions);
+      return res.status(401).json({
+        message: "Session expired",
+        isAuthenticated: false,
+      });
+    };
+  };
 };
-
-
-
-
-
-// const checkSessionStatus = async (req: Request, res: Response) => {
-  
-//   return res.json({message: "From sessionstaus"});
-// };
 
 
 

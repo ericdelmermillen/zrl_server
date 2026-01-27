@@ -7,17 +7,13 @@ import cors from "cors";
 import authRouter from "./routes/authRoute";
 import { initDb } from "./dbClient";
 import { isProduction } from "./utils/constants";
+import { corsOptions } from "./utils/configObjs";
 
 const app = express();
 
 // const AWS_BUCKET_BASE_PATH = process.env.AWS_BUCKET_BASE_PATH; 
-const CLIENT_HOST = process.env.CLIENT_HOST
 const environment = isProduction ? "production" : "development";
 
-const corsOptions = { 
-  origin: CLIENT_HOST, 
-  credentials: true 
-};
 app.use(cors(corsOptions));
 
 app.use(express.json());
