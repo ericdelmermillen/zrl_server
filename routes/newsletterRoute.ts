@@ -1,26 +1,39 @@
 import express from "express";
 import { 
-  subscribeNewsletter,
-  confirmNewsletterSubscribe,
-  unsubscribeNewsletter
+  getNewsletters,
+  getNewsletterByID,
+  addNewsletter,
+  editNewsletter,
+  deleteNewsletter
 } from "../controllers/newsletterController";
 
 
 const newsletterRouter = express.Router();
 
-// POST /api/newsletter/subscribe
-newsletterRouter.route('/subscribe')
-  .post(subscribeNewsletter);
+
+// GET /api/newsletter/newsletters
+newsletterRouter.route('/newsletters')
+  .post(getNewsletters);
 
 
-// POST /api/newsletter/confirmsubscribe
-newsletterRouter.route("/confirmsubscribe")
-  .post(confirmNewsletterSubscribe);
+// GET /api/newsletter/newsletter:id
+newsletterRouter.route('/newsletters:id')
+  .post(getNewsletterByID);
 
 
-// POST /api/auth/loginuser
-newsletterRouter.route("/loginuser")
-  .post(unsubscribeNewsletter);
+// POST /api/newsletter/add
+newsletterRouter.route('/add')
+  .post(addNewsletter);
+
+
+// PUT /api/newsletter/edit:id
+newsletterRouter.route("/edit:id")
+  .post(editNewsletter);
+
+
+// DELETE /api/newsletter/unsubscribe
+newsletterRouter.route("/delete:id")
+  .post(deleteNewsletter);
 
   
 export default newsletterRouter;

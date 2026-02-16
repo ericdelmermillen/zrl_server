@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRouter from "./routes/authRoute";
 import newsletterRouter from "./routes/newsletterRoute";
+import subscribeRouter from "./routes/subscribeRoute";
 import { initDb } from "./dbClient";
 import { isProduction } from "./utils/constants";
 import { corsOptions } from "./utils/configObjs";
@@ -27,7 +28,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRouter);
 
 // *** for adding subscriber, confirming and unsubscribing
-// app.use("/api/subscribe", subscribeRouter);
+app.use("/api/subscribe", subscribeRouter);
 
 // *** for getting, editing, deleting welcome email
 // app.use("/api/welcome", welcomeRouter);
