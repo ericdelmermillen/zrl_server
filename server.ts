@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 // import rateLimit from "express-rate-limit";
 import cors from "cors";
 import authRouter from "./routes/authRoute";
+import newsletterRouter from "./routes/newsletterRoute";
 import { initDb } from "./dbClient";
 import { isProduction } from "./utils/constants";
 import { corsOptions } from "./utils/configObjs";
@@ -24,6 +25,7 @@ app.use(cookieParser());
 
 // routes
 app.use("/api/auth", authRouter);
+app.use("/api/newsletter", newsletterRouter);
 
 
 const PORT = process.env.PORT || 8080;

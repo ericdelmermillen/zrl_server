@@ -41,7 +41,7 @@ const createUser = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       success: true,
-      message: "User created successfully",
+      message: "User created successfully"
     });
   } catch (error: any) {
     if (error?.code === "23505") {
