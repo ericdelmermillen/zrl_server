@@ -1,5 +1,6 @@
-const CLIENT_HOST = process.env.CLIENT_HOST;
 import { isProduction } from "./constants";
+
+const CLIENT_HOST = process.env.CLIENT_HOST;
 
 const corsOptions = { 
   origin: CLIENT_HOST, 
@@ -10,7 +11,7 @@ const cookieOptions = {
   httpOnly: true,                // should be true in both envs
   secure: isProduction,          // HTTPS only in prod
   sameSite: isProduction ? "none" : "lax",
-  path: "/",
+  path: "/"
 } as const;
 
 export {

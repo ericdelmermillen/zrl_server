@@ -64,12 +64,12 @@ const setAuthCookies = (res: Response, userId: number,
 
   res.cookie("token", token, {
     ...cookieOptions,
-    maxAge: tokenCookieMaxAgeMs,
+    maxAge: tokenCookieMaxAgeMs
   });
 
   res.cookie("refreshToken", refreshToken, {
     ...cookieOptions,
-    maxAge: refreshTokenCookieMaxAgeMs,
+    maxAge: refreshTokenCookieMaxAgeMs
   });
 };
 

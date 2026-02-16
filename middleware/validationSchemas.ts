@@ -1,14 +1,10 @@
+import { Request, Response, NextFunction } from "express";
 import { 
   body, 
   // param,
   validationResult, 
   ValidationChain
  } from "express-validator";
-import { 
-  Request, 
-  Response, 
-  NextFunction 
-} from "express";
 
 
 const validateRequest =
@@ -40,7 +36,7 @@ const emailAndPasswordAreValid = [
     .isString()
     .withMessage("Password must be a string")
     .isLength({ min: 8, max: 32 })
-    .withMessage("Password must be between 8-32 characters long"),
+    .withMessage("Password must be between 8-32 characters long")
 ];
 
 export {

@@ -3,13 +3,9 @@ import {
   createUser, 
   loginUser, 
   checkSessionStatus,
-  logoutUser, 
-  refreshToken 
+  logoutUser
 } from "../controllers/authController";
-import { 
-  validateRequest,
-  emailAndPasswordAreValid
- } from "../middleware/validationSchemas";
+import { validateRequest,emailAndPasswordAreValid } from "../middleware/validationSchemas";
 
 const authRouter = express.Router();
 
@@ -20,9 +16,11 @@ authRouter.route('/createuser')
     validateRequest(emailAndPasswordAreValid),
     createUser);
 
+
 // POST /api/auth/sessionstatus
 authRouter.route("/sessionstatus")
   .post(checkSessionStatus);
+
 
 // POST /api/auth/loginuser
 authRouter.route("/loginuser")
@@ -30,10 +28,6 @@ authRouter.route("/loginuser")
     validateRequest(emailAndPasswordAreValid),
     loginUser);
 
-
-// POST /api/auth/refreshtoken
-authRouter.route("/refreshtoken")
-  .post(refreshToken);
 
 // POST /api/auth/logoutUser
 authRouter.route("/logoutuser")

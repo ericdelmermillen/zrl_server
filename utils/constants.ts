@@ -6,15 +6,15 @@ const REFRESH_TOKEN_EXP_INT = process.env.JWT_REFRESH_TOKEN_EXPIRATION_INTERVAL;
 
 // env var checks centralized here
 if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined")
+  throw new Error("JWT_SECRET is not defined");
 };
 
 if (!TOKEN_EXP_INT) {
-  throw new Error("JWT_TOKEN_EXPIRATION_INTERVAL is not defined")
+  throw new Error("JWT_TOKEN_EXPIRATION_INTERVAL is not defined");
 };
 
 if (!REFRESH_TOKEN_EXP_INT) {
-  throw new Error("JWT_REFRESH_TOKEN_EXPIRATION_INTERVAL is not defined")
+  throw new Error("JWT_REFRESH_TOKEN_EXPIRATION_INTERVAL is not defined");
 };
 
 const isProduction = process.env.NODE_ENV === "production";

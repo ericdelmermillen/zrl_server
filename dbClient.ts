@@ -25,7 +25,7 @@ const pool = new Pool({
   password: PASSWORD,
   database: DATABASE,
   max: DB_CONNECTION_LIMIT,
-  port: 5432,
+  port: 5432
 });
 
 // Test connection when pool is created
