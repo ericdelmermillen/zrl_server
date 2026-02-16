@@ -13,16 +13,18 @@ import { Request, Response } from "express";
 const getNewsletters = async (req: Request, res: Response) => {
    return res.status(200).json({
       success: true,
-      message: "Placeholder confirm add newsletter response"
+      message: "Placeholder get newsletters response"
     });
 };
 
 
 // GET /api/newsletter/get
 const getNewsletterByID = async (req: Request, res: Response) => {
+  const newsletterID = req.params.id;
+
    return res.status(200).json({
       success: true,
-      message: "Placeholder confirm add newsletter response"
+      message: `Placeholder get newsletter ${newsletterID} response`
     });
 };
 
@@ -31,35 +33,37 @@ const getNewsletterByID = async (req: Request, res: Response) => {
 const addNewsletter = async (req: Request, res: Response) => {
    return res.status(200).json({
       success: true,
-      message: "Placeholder confirm add newsletter response"
+      message: "Placeholder add newsletter response"
     });
 };
 
 
 // PUT /api/newsletter/add
-const editNewsletter = async (req: Request, res: Response) => {
+const editNewsletterByID = async (req: Request, res: Response) => {
+  const newsletterID = req.params.id;
+  
    return res.status(200).json({
       success: true,
-      message: "Placeholder edit newsletter response"
+      message: `Placeholder edit newsletter ${newsletterID} response`
     });
 };
 
 
 // PUT /api/newsletter/delete
-const deleteNewsletter = async (req: Request, res: Response) => {
+const deleteNewsletterByID = async (req: Request, res: Response) => {
+  const newsletterID = req.params.id;
+
    return res.status(200).json({
       success: true,
-      message: "Placeholder delete newsletter response"
+      message: `Placeholder delete newsletter ${newsletterID} response`
     });
 };
-
-
 
 
 export {
   getNewsletters,
   getNewsletterByID,
   addNewsletter,
-  editNewsletter,
-  deleteNewsletter
+  editNewsletterByID,
+  deleteNewsletterByID
 };
