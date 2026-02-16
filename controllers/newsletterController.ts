@@ -8,6 +8,7 @@ import { Request, Response } from "express";
 
 // const JWT_SECRET = process.env.JWT_SECRET!;
 
+// *** should be subscribe route and controller
 
 // POST /api/newsletter/subscribe
 const subscribeNewsletter = async (req: Request, res: Response) => {
@@ -30,14 +31,46 @@ const confirmNewsletterSubscribe = async (req: Request, res: Response) => {
 const unsubscribeNewsletter = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
-      message: "Placeholder confirm unsubscribe response"
+      message: "Placeholder unsubscribe response"
     });
 };
+
+
+// *** should be newsletter route and controller
+// POST /api/newsletter/add
+const addNewsletter = async (req: Request, res: Response) => {
+   return res.status(200).json({
+      success: true,
+      message: "Placeholder confirm add newsletter response"
+    });
+};
+
+
+// PUT /api/newsletter/add
+const editNewsletter = async (req: Request, res: Response) => {
+   return res.status(200).json({
+      success: true,
+      message: "Placeholder edit newsletter response"
+    });
+};
+
+
+// PUT /api/newsletter/delete
+const deleteNewsletter = async (req: Request, res: Response) => {
+   return res.status(200).json({
+      success: true,
+      message: "Placeholder delete newsletter response"
+    });
+};
+
 
 
 
 export {
   subscribeNewsletter,
   confirmNewsletterSubscribe,
-  unsubscribeNewsletter
+  unsubscribeNewsletter,
+  addNewsletter,
+  editNewsletter,
+  deleteNewsletter
 };

@@ -25,6 +25,14 @@ app.use(cookieParser());
 
 // routes
 app.use("/api/auth", authRouter);
+
+// *** for adding subscriber, confirming and unsubscribing
+// app.use("/api/subscribe", subscribeRouter);
+
+// *** for getting, editing, deleting welcome email
+// app.use("/api/welcome", welcomeRouter);
+
+// *** for getting, adding, editing, deleting newsletter entries
 app.use("/api/newsletter", newsletterRouter);
 
 
