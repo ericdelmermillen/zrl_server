@@ -49,7 +49,7 @@ const editNewsletterByID = async (req: Request, res: Response) => {
 };
 
 
-// PUT /api/newsletter/delete
+// DELETE /api/newsletter/delete
 const deleteNewsletterByID = async (req: Request, res: Response) => {
   const newsletterID = req.params.id;
 
