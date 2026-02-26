@@ -7,7 +7,7 @@ import cors from "cors";
 import authRouter from "./routes/authRoute";
 import newsletterRouter from "./routes/newsletterRoute";
 import subscribeRouter from "./routes/subscribeRoute";
-import welcomeRouter from "./routes/welcomeRoute";
+import moreInfoRouter from "./routes/moreInfoRoute";
 import { initDb } from "./dbClient";
 import { isProduction } from "./utils/constants";
 import { corsOptions } from "./utils/configObjs";
@@ -32,7 +32,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/subscribe", subscribeRouter);
 
 // *** for getting, editing, deleting welcome email
-app.use("/api/welcome", welcomeRouter);
+app.use("/api/moreinfo", moreInfoRouter);
 
 // *** for getting, adding, editing, deleting newsletter entries
 app.use("/api/newsletter", newsletterRouter);

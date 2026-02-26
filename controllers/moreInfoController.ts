@@ -5,47 +5,45 @@ import { Resend } from "resend";
 // import { cookieOptions } from "../utils/configObjs";
 // import bcrypt from "bcrypt";
 // import jwt from "jsonwebtoken";
+import { buildMoreInfoEmailTemplate } from "../templates/moreInfoEmailTemplate";
+import {  TEXT_COLOR, SPACING_SMALL, FONT_SIZE_BODY } from "../styling/stylingConstants"
 import pool from "../dbClient";
-import { buildWelcomeEmailTemplate } from "../templates/welcomeEmailTemplate";
-import {  TEXT_COLOR, SPACING_SMALL, FONT_SIZE_BODY,
-} from "../styling/stylingConstants"
 
 // const JWT_SECRET = process.env.JWT_SECRET!;
-const resend = new Resend(process.env.RESEND_EMAILING_API_KEY);
 const FROM_EMAIL_ADDRESS = process.env.FROM_EMAIL_ADDRESS!
 const ADMIN_EMAIL_ADDRESS = process.env.ADMIN_EMAIL_ADDRESS!
-// console.log(ADMIN_EMAIL_ADDRESS)
+
+const resend = new Resend(process.env.RESEND_EMAILING_API_KEY);
+
 
 // need word mark for top bar (larger), word make for footer, logo
 
-
-// GET /api/welcome
-const getWelcomeEmails = async (req: Request, res: Response) => {
-   return res.status(200).json({
-      success: true,
-      message: "Placeholder get welcome email response"
-    });
+// GET /api/moreinfo
+const getMoreInfoEmails = async (req: Request, res: Response) => {
+  return res.status(200).json({
+    success: true,
+    message: "Placeholder get moreInfo email response"
+  });
 };
 
 
-// POST /api/welcome/
-const createNewWelcomeEmail = async (req: Request, res: Response) => {
-  
-   return res.status(200).json({
-      success: true,
-      message: "Placeholder new welcome email response"
-    });
+// POST /api/moreinfo/
+const createNewMoreInfoEmail = async (req: Request, res: Response) => {  
+  return res.status(200).json({
+    success: true,
+    message: "Placeholder new moreInfo email response"
+  });
 };
 
 
-// POST /api/welcome/send
-const sendWelcomeEmail = async (req: Request, res: Response) => {
+// POST /api/moreinfo/send
+const sendMoreInfoEmail = async (req: Request, res: Response) => {
   const { name, email, phone, timezone, hasSubscribed = false } = req.body;
 
   try {
     const result = await pool.query(`
       SELECT subject, body_content
-      FROM welcome_email_versions
+      FROM more_info_email_versions
       ORDER BY created_at DESC
       LIMIT 1
     `);
@@ -53,7 +51,7 @@ const sendWelcomeEmail = async (req: Request, res: Response) => {
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Unable to send More Info email."
+        message: "Unable to send moreInfo email."
       });
     };
 
@@ -72,7 +70,7 @@ const sendWelcomeEmail = async (req: Request, res: Response) => {
       `)
       .join("");
 
-    const html = buildWelcomeEmailTemplate(name, paragraphsHtml);
+    const html = buildMoreInfoEmailTemplate(name, paragraphsHtml);
 
     const text = body_content
       .split("\\n")
@@ -105,7 +103,7 @@ const sendWelcomeEmail = async (req: Request, res: Response) => {
       .filter((item) => !!item)
       .join("\n");
 
-    const [ welcomeResult, notificationResult ] = await Promise.all([
+    const [ moreInfoResult, notificationResult ] = await Promise.all([
       resend.emails.send({
         from: FROM_EMAIL_ADDRESS,
         to: email,
@@ -122,11 +120,11 @@ const sendWelcomeEmail = async (req: Request, res: Response) => {
       })
     ]);
 
-    if (welcomeResult.error || notificationResult.error) {
+    if (moreInfoResult.error || notificationResult.error) {
       return res.status(400).json({
         success: false,
         message: "Failed to send email",
-        error: welcomeResult.error || notificationResult.error
+        error: moreInfoResult.error || notificationResult.error
       });
     };
 
@@ -156,7 +154,7 @@ const sendWelcomeEmail = async (req: Request, res: Response) => {
 
 
 export {
-  getWelcomeEmails,
-  createNewWelcomeEmail,
-  sendWelcomeEmail
+  getMoreInfoEmails,
+  createNewMoreInfoEmail,
+  sendMoreInfoEmail
 };

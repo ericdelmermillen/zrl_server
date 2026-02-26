@@ -18,7 +18,7 @@ import {
 const FROM_EMAIL_ADDRESS = process.env.FROM_EMAIL_ADDRESS!;
 
 
-const buildWelcomeEmailTemplate = (name: string, bodyContent: string) => `
+const buildMoreInfoEmailTemplate = (name: string, bodyContent: string) => `
   <html>
     <body style="margin: 0; padding: 0; font-family: ${FONT}, sans-serif; background-color: ${BACKGROUND_COLOR};">
 
@@ -134,5 +134,5 @@ const buildWelcomeEmailTemplate = (name: string, bodyContent: string) => `
 `;
 
 export {
-  buildWelcomeEmailTemplate
+  buildMoreInfoEmailTemplate
 };
