@@ -23,14 +23,27 @@ const validateRequest =
     next();
   };
 
-// for createUser and loginUser routes
-const emailAndPasswordAreValid = [
+
+const nameIsValid = [
+  body('name')
+    .trim()
+    .isString()
+    .withMessage('Name must be a string')
+    .isLength({ min: 2 })
+    .withMessage('Name must be at least 2 characters long')
+];
+
+
+const emailIsValid = [
   body('email')
     .trim()
     .toLowerCase()
     .isEmail()
-    .withMessage('Invalid email format'),
+    .withMessage('Invalid email format')
+];
 
+
+const passwordIsValid = [
   body("password")
     .trim()
     .isString()
@@ -39,7 +52,10 @@ const emailAndPasswordAreValid = [
     .withMessage("Password must be between 8-32 characters long")
 ];
 
+
 export {
   validateRequest,
-  emailAndPasswordAreValid
+  nameIsValid,
+  emailIsValid,
+  passwordIsValid
 };

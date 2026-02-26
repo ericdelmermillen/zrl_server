@@ -1,11 +1,11 @@
 import express from "express";
+import { validateRequest, emailIsValid, passwordIsValid } from "../middleware/validationSchemas";
 import { 
   createUser, 
   loginUser, 
   checkSessionStatus,
   logoutUser
 } from "../controllers/authController";
-import { validateRequest,emailAndPasswordAreValid } from "../middleware/validationSchemas";
 
 const authRouter = express.Router();
 
@@ -13,7 +13,8 @@ const authRouter = express.Router();
 // POST /api/auth/createuser
 authRouter.route('/createuser')
   .post(
-    validateRequest(emailAndPasswordAreValid),
+    validateRequest(emailIsValid),
+    validateRequest(passwordIsValid),
     createUser);
 
 
@@ -25,7 +26,8 @@ authRouter.route("/sessionstatus")
 // POST /api/auth/loginuser
 authRouter.route("/loginuser")
   .post(
-    validateRequest(emailAndPasswordAreValid),
+    validateRequest(emailIsValid),
+    validateRequest(passwordIsValid),
     loginUser);
 
 

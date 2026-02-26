@@ -1,7 +1,8 @@
 import express from "express";
+import { validateRequest, nameIsValid, emailIsValid } from "../middleware/validationSchemas";
 import { 
-  getWelcomeEmail,
-  editWelcomeEmail,
+  getWelcomeEmails,
+  createNewWelcomeEmail,
   sendWelcomeEmail
 } from "../controllers/welcomeController";
 
@@ -11,18 +12,20 @@ const welcomeRouter = express.Router();
 
 // GET /api/welcome
 welcomeRouter.route('/')
-  .get(getWelcomeEmail);
+  .get(getWelcomeEmails);
 
 
-// PUT /api/welcome/edit
+// POST /api/welcome/
 welcomeRouter.route('/')
-  .put(editWelcomeEmail);
+  .post(createNewWelcomeEmail);
 
 
-// add express validator for email
 // POST /api/welcome/send
 welcomeRouter.route('/send')
-  .post(sendWelcomeEmail);
+  .post(
+    validateRequest(nameIsValid),
+    validateRequest(emailIsValid),
+    sendWelcomeEmail);
 
   
 export default welcomeRouter;
