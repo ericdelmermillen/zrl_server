@@ -43,9 +43,7 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
   try {
     const result = await pool.query(`
       SELECT subject, body_content
-      FROM more_info_email_versions
-      ORDER BY created_at DESC
-      LIMIT 1
+      FROM more_info_email
     `);
 
     if (result.rows.length === 0) {

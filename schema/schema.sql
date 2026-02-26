@@ -26,34 +26,19 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
 );
 
 -- more info email
-CREATE TABLE more_info_email_versions (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE more_info_email (
+  id BOOLEAN PRIMARY KEY DEFAULT TRUE,
   subject VARCHAR(255) NOT NULL,
   body_content TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  modified_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT only_one_row CHECK (id = TRUE)
 );
 
 -- see welcomes
 INSERT INTO
-  more_info_email_versions (subject, body_content)
+  more_info_email (subject, body_content)
 VALUES
   (
-    'oldest',
+    'old',
     'Thanks for reaching out to learn more about Zidgy Road Labs.\nWe specialize in innovative solutions that help businesses grow and succeed in today''s digital landscape.\nOur team is dedicated to providing exceptional service and results that exceed expectations.\nIf you have any questions or would like to discuss how we can help, feel free to reply to this email.'
-  );
-
-INSERT INTO
-  more_info_email_versions (subject, body_content)
-VALUES
-  (
-    'newer',
-    'Thank you for your interest in Zidgy Road Labs.\nWe build cutting-edge digital solutions tailored to help businesses scale and thrive.\nOur experienced team is committed to delivering outstanding results on every project.\nDon''t hesitate to reply to this email if you''d like to learn more about what we can do for you.'
-  );
-
-INSERT INTO
-  more_info_email_versions (subject, body_content)
-VALUES
-  (
-    'newest',
-    'Welcome, and thanks for getting in touch with Zidgy Road Labs.\nWe craft innovative digital products that drive real business growth.\nFrom concept to delivery, our team brings expertise and dedication to everything we build.\nFeel free to reply to this email anytime — we''d love to discuss how we can help.'
   );
