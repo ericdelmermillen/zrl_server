@@ -18,7 +18,7 @@ import {
 const FROM_EMAIL_ADDRESS = process.env.FROM_EMAIL_ADDRESS!;
 
 
-const buildMoreInfoEmailTemplate = (name: string, bodyContent: string) => `
+const buildMoreInfoEmailTemplate = (greeting: string, bodyContent: string) => `
   <html>
     <body style="margin: 0; padding: 0; font-family: ${FONT}, sans-serif; background-color: ${BACKGROUND_COLOR};">
 
@@ -68,7 +68,7 @@ const buildMoreInfoEmailTemplate = (name: string, bodyContent: string) => `
                     color: ${TEXT_COLOR};
                     font-size: ${FONT_SIZE_BODY};
                     line-height: 1.7;
-                  ">Hi ${name.split(" ")[0]},</p>
+                  ">${greeting}</p>
 
                   ${bodyContent}
 
@@ -132,6 +132,7 @@ const buildMoreInfoEmailTemplate = (name: string, bodyContent: string) => `
     </body>
   </html>
 `;
+
 
 export {
   buildMoreInfoEmailTemplate

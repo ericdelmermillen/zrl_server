@@ -38,11 +38,11 @@ const createNewMoreInfoEmail = async (req: Request, res: Response) => {
 
 // POST /api/moreinfo/send
 const sendMoreInfoEmail = async (req: Request, res: Response) => {
-  const { name, email, phone, timezone, hasSubscribed = false } = req.body;
+  const { name, email, phone, timezone = "UTC", hasSubscribed = false } = req.body;
 
   try {
     const result = await pool.query(`
-      SELECT subject, body_content
+      SELECT subject, greeting, body_content
       FROM more_info_email
     `);
 
@@ -53,7 +53,9 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
       });
     };
 
-    const { subject, body_content } = result.rows[0];
+    const { subject, greeting, body_content } = result.rows[0];
+
+    const personalizedGreeting = greeting.replace("<name>", name);
 
     const paragraphsHtml = body_content
       .split("\\n")
@@ -68,15 +70,24 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
       `)
       .join("");
 
-    const html = buildMoreInfoEmailTemplate(name, paragraphsHtml);
+    const html = buildMoreInfoEmailTemplate(personalizedGreeting, paragraphsHtml);
 
     const text = body_content
       .split("\\n")
       .filter((p: string) => p.trim() !== "")
       .join("\n\n");
 
+    const safeTimezone = (() => {
+      try {
+        Intl.DateTimeFormat(undefined, { timeZone: timezone });
+        return timezone;
+      } catch {
+        return "UTC";
+      };
+    })();
+
     const dateOfContact = new Date().toLocaleString("en-CA", {
-      timeZone: timezone ?? "UTC",
+      timeZone: safeTimezone,
       dateStyle: "full",
       timeStyle: "long"
     });
@@ -85,7 +96,7 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
       <p><strong>Name:</strong> ${name}</p>
       <p><strong>Email:</strong> ${email}</p>
       ${phone ? `<p><strong>Phone:</strong> ${phone}</p>`: ""}
-      <p><strong>Timezone:</strong> ${timezone ?? "UTC"}</p>
+      ${safeTimezone !== "UTC" ? `<p><strong>Timezone:</strong> ${safeTimezone}</p>`: ""}
       <p><strong>Date of inquiry:</strong> ${dateOfContact}</p>
     `;
 
@@ -94,7 +105,7 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
       `Name: ${name}`,
       `Email: ${email}`,
       phone ? `Phone: ${phone}` : null,
-      `Timezone: ${timezone ?? "UTC"}`,
+      safeTimezone !== "UTC" ? `Timezone: ${safeTimezone}` : null,
       `Date of Contact: ${dateOfContact}`,
       `Subscribed to newsletter: ${hasSubscribed ? "Yes" : "No"}`
       ]
@@ -128,7 +139,7 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
 
     // TODO: upsert subscriber into newsletter_subscribers table
     if (hasSubscribed) {
-      console.log("user has subscribed")
+      console.log(`${name} has subscribed`)
       // await pool.query(`
       //   INSERT INTO newsletter_subscribers (email, name)
       //   VALUES ($1, $2)
@@ -138,7 +149,8 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      message: "Email sent successfully"
+      message: "Email sent successfully",
+      hasSubscribed
     });
 
   } catch (error) {

@@ -26,19 +26,23 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
 );
 
 -- more info email
+-- add greeting
 CREATE TABLE more_info_email (
   id BOOLEAN PRIMARY KEY DEFAULT TRUE,
   subject VARCHAR(255) NOT NULL,
+  greeting VARCHAR(255) NOT NULL,
   body_content TEXT NOT NULL,
   modified_at TIMESTAMPTZ DEFAULT NOW(),
-  CONSTRAINT only_one_row CHECK (id = TRUE)
+  CONSTRAINT only_one_row CHECK (id = TRUE),
+  CONSTRAINT greeting_has_name CHECK (greeting LIKE '%<name>%')
 );
 
 -- see welcomes
 INSERT INTO
-  more_info_email (subject, body_content)
+  more_info_email (subject, greeting, body_content)
 VALUES
   (
-    'old',
+    'Welcome to Zidgy Road Labs',
+    'Hi <name>,',
     'Thanks for reaching out to learn more about Zidgy Road Labs.\nWe specialize in innovative solutions that help businesses grow and succeed in today''s digital landscape.\nOur team is dedicated to providing exceptional service and results that exceed expectations.\nIf you have any questions or would like to discuss how we can help, feel free to reply to this email.'
   );
