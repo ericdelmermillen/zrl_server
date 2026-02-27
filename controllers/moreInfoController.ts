@@ -19,19 +19,45 @@ const resend = new Resend(process.env.RESEND_EMAILING_API_KEY);
 // need word mark for top bar (larger), word make for footer, logo
 
 // GET /api/moreinfo
-const getMoreInfoEmails = async (req: Request, res: Response) => {
-  return res.status(200).json({
-    success: true,
-    message: "Placeholder get moreInfo email response"
-  });
+const getMoreInfoEmail = async (req: Request, res: Response) => {
+  try {
+    const result = await pool.query(`
+      SELECT subject, greeting, body_content
+      FROM more_info_email
+    `);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "More info email not found."
+      });
+    };
+
+    const { subject, greeting, body_content } = result.rows[0];
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        subject: subject,
+        greeting: greeting,
+        body_content: body_content
+      }
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching more info email.",
+      error
+    });
+  };
 };
 
-
-// POST /api/moreinfo/
-const createNewMoreInfoEmail = async (req: Request, res: Response) => {  
+// PUT /api/moreinfo/edit
+const editMoreInfoEmail = async (req: Request, res: Response) => {  
   return res.status(200).json({
     success: true,
-    message: "Placeholder new moreInfo email response"
+    message: "Placeholder edit moreInfo email response"
   });
 };
 
@@ -55,7 +81,7 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
 
     const { subject, greeting, body_content } = result.rows[0];
 
-    const personalizedGreeting = greeting.replace("<name>", name);
+    const personalizedGreeting = greeting.replace("<name>", name.split(" ")[0]);
 
     const paragraphsHtml = body_content
       .split("\\n")
@@ -164,7 +190,7 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
 
 
 export {
-  getMoreInfoEmails,
-  createNewMoreInfoEmail,
+  getMoreInfoEmail,
+  editMoreInfoEmail,
   sendMoreInfoEmail
 };

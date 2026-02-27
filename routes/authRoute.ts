@@ -7,6 +7,7 @@ import {
   logoutUser
 } from "../controllers/authController";
 
+
 const authRouter = express.Router();
 
 

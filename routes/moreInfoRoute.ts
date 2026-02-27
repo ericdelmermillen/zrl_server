@@ -1,10 +1,11 @@
 import express from "express";
 import { validateRequest, nameIsValid, emailIsValid } from "../middleware/validationSchemas";
 import { 
-  getMoreInfoEmails,
-  createNewMoreInfoEmail,
+  getMoreInfoEmail,
+  editMoreInfoEmail,
   sendMoreInfoEmail
 } from "../controllers/moreInfoController";
+import { authenticate } from "../middleware/authenticate";
 
 
 const moreInfoRouter = express.Router();
@@ -12,12 +13,16 @@ const moreInfoRouter = express.Router();
 
 // GET /api/moreinfo
 moreInfoRouter.route('/')
-  .get(getMoreInfoEmails);
+  .get(
+    authenticate,
+    getMoreInfoEmail);
 
 
-// POST /api/moreinfo/
-moreInfoRouter.route('/')
-  .post(createNewMoreInfoEmail);
+// PUT /api/moreinfo/
+moreInfoRouter.route('/edit')
+  .put(
+    authenticate,
+    editMoreInfoEmail);
 
 
 // POST /api/moreinfo/send

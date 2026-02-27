@@ -58,6 +58,7 @@ const createUser = async (req: Request, res: Response) => {
 
 // ***
 // POST /api/auth/sessionstatus
+// *** used to check session status on page load/app load
 const checkSessionStatus = (req: Request, res: Response) => {
   const token = req.cookies?.token as string | undefined;
   const refreshToken = req.cookies?.refreshToken as string | undefined;
