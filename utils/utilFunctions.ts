@@ -1,6 +1,7 @@
 import { Response } from "express";
 import jwt, { SignOptions } from "jsonwebtoken";
 import { TokenType } from "../typing/types";
+import { FONT, PRIMARY_COLOR } from "../styling/stylingConstants";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const TOKEN_EXP_INT = process.env.JWT_TOKEN_EXPIRATION_INTERVAL!;
@@ -73,10 +74,16 @@ const setAuthCookies = (res: Response, userId: number,
   });
 };
 
+const linkifyForEmail = (text: string): string => {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, (url) => `<a href="${url}" style="color: ${PRIMARY_COLOR}; text-decoration: underline; font-family: ${FONT}, sans-serif;">${url}</a>`);
+};
+
 
 export {
   getToken,
   convertJWTExpirationToMs,
   clearAuthCookies,
-  setAuthCookies
+  setAuthCookies,
+  linkifyForEmail
 };

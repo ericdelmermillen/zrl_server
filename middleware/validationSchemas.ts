@@ -23,7 +23,6 @@ const validateRequest =
     next();
   };
 
-
 const nameIsValid = [
   body('name')
     .trim()
@@ -33,7 +32,6 @@ const nameIsValid = [
     .withMessage('Name must be at least 2 characters long')
 ];
 
-
 const emailIsValid = [
   body('email')
     .trim()
@@ -41,7 +39,6 @@ const emailIsValid = [
     .isEmail()
     .withMessage('Invalid email format')
 ];
-
 
 const passwordIsValid = [
   body("password")
@@ -52,10 +49,42 @@ const passwordIsValid = [
     .withMessage("Password must be between 8-32 characters long")
 ];
 
+const subjectIsValid = [
+  body('subject')
+    .trim()
+    .isString()
+    .withMessage('Subject must be a string')
+    .isLength({ min: 2, max: 255 })
+    .withMessage('Subject must be between 2 and 255 characters')
+];
+
+const greetingIsValid = [
+  body('greeting')
+    .trim()
+    .isString()
+    .withMessage('Greeting must be a string')
+    .isLength({ min: 2, max: 255 })
+    .withMessage('Greeting must be between 2 and 255 characters')
+    .contains('<name>')
+    .withMessage('Greeting must contain "<name>"')
+];
+
+const bodyContentIsValid = [
+  body('body_content')
+    .trim()
+    .isString()
+    .withMessage('Body content must be a string')
+    .isLength({ min: 25 })
+    .withMessage('Body content must be at least 25 characters long')
+];
+
 
 export {
   validateRequest,
   nameIsValid,
   emailIsValid,
-  passwordIsValid
+  passwordIsValid,
+  subjectIsValid,
+  greetingIsValid,
+  bodyContentIsValid
 };

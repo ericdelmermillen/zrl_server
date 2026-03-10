@@ -26,7 +26,6 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
 );
 
 -- more info email
--- add greeting
 CREATE TABLE more_info_email (
   id BOOLEAN PRIMARY KEY DEFAULT TRUE,
   subject VARCHAR(255) NOT NULL,

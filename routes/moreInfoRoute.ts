@@ -1,5 +1,12 @@
 import express from "express";
-import { validateRequest, nameIsValid, emailIsValid } from "../middleware/validationSchemas";
+import { 
+  validateRequest, 
+  nameIsValid, 
+  emailIsValid, 
+  greetingIsValid, 
+  subjectIsValid,
+  bodyContentIsValid
+} from "../middleware/validationSchemas";
 import { 
   getMoreInfoEmail,
   editMoreInfoEmail,
@@ -10,20 +17,20 @@ import { authenticate } from "../middleware/authenticate";
 
 const moreInfoRouter = express.Router();
 
-
 // GET /api/moreinfo
 moreInfoRouter.route('/')
   .get(
-    authenticate,
+    // authenticate,
     getMoreInfoEmail);
-
 
 // PUT /api/moreinfo/
 moreInfoRouter.route('/edit')
   .put(
-    authenticate,
+    // authenticate,
+    validateRequest(greetingIsValid),
+    validateRequest(subjectIsValid),
+    validateRequest(bodyContentIsValid),
     editMoreInfoEmail);
-
 
 // POST /api/moreinfo/send
 moreInfoRouter.route('/send')
@@ -31,6 +38,5 @@ moreInfoRouter.route('/send')
     validateRequest(nameIsValid),
     validateRequest(emailIsValid),
     sendMoreInfoEmail);
-
   
 export default moreInfoRouter;

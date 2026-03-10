@@ -23,9 +23,12 @@ const TOKEN_COOKIE_MAX_AGE_MS = convertJWTExpirationToMs(TOKEN_EXP_INT);
 
 const REFRESH_COOKIE_MAX_AGE_MS = convertJWTExpirationToMs(REFRESH_TOKEN_EXP_INT);
 
+const COPYRIGHT = `© ${new Date().getFullYear()}`;
+
 
 export {
   isProduction,
   TOKEN_COOKIE_MAX_AGE_MS,
-  REFRESH_COOKIE_MAX_AGE_MS
+  REFRESH_COOKIE_MAX_AGE_MS, 
+  COPYRIGHT
 };

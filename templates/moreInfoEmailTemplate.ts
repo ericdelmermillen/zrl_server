@@ -14,8 +14,10 @@ import {
   TEXT_LIGHT_COLOR, 
   TEXT_MUTED_COLOR 
 } from "../styling/stylingConstants";
+import { COPYRIGHT } from "../utils/constants";
 
 const FROM_EMAIL_ADDRESS = process.env.FROM_EMAIL_ADDRESS!;
+const COMPANY_NAME = process.env.COMPANY_NAME!
 
 
 const buildMoreInfoEmailTemplate = (greeting: string, bodyContent: string) => `
@@ -110,14 +112,14 @@ const buildMoreInfoEmailTemplate = (greeting: string, bodyContent: string) => `
                     font-size: ${FONT_SIZE_SMALL};
                     color: ${TEXT_LIGHT_COLOR};
                   ">
-                    Zidgy Road Labs
+                    ${COMPANY_NAME}
                   </p>
                   <p style="
                     margin: 0;
                     font-size: ${FONT_SIZE_TINY};
                     color: ${TEXT_MUTED_COLOR};
                   ">
-                    © ${new Date().getFullYear()} All rights reserved
+                    ${COPYRIGHT}
                   </p>
                 </td>
               </tr>

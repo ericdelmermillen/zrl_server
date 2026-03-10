@@ -6,12 +6,15 @@ import { Resend } from "resend";
 // import bcrypt from "bcrypt";
 // import jwt from "jsonwebtoken";
 import { buildMoreInfoEmailTemplate } from "../templates/moreInfoEmailTemplate";
-import {  TEXT_COLOR, SPACING_SMALL, FONT_SIZE_BODY } from "../styling/stylingConstants"
+import { COPYRIGHT } from "../utils/constants";
+import { TEXT_COLOR, SPACING_SMALL, FONT_SIZE_BODY } from "../styling/stylingConstants"
+import { linkifyForEmail } from "../utils/utilFunctions";
 import pool from "../dbClient";
 
 // const JWT_SECRET = process.env.JWT_SECRET!;
 const FROM_EMAIL_ADDRESS = process.env.FROM_EMAIL_ADDRESS!
 const ADMIN_EMAIL_ADDRESS = process.env.ADMIN_EMAIL_ADDRESS!
+const COMPANY_NAME = process.env.COMPANY_NAME!
 
 const resend = new Resend(process.env.RESEND_EMAILING_API_KEY);
 
@@ -37,11 +40,11 @@ const getMoreInfoEmail = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      data: {
-        subject: subject,
-        greeting: greeting,
-        body_content: body_content
-      }
+      subject: subject,
+      greeting: greeting,
+      body_content: body_content,
+      companyName: COMPANY_NAME,
+      copyRight: COPYRIGHT
     });
 
   } catch (error) {
@@ -54,15 +57,48 @@ const getMoreInfoEmail = async (req: Request, res: Response) => {
 };
 
 // PUT /api/moreinfo/edit
-const editMoreInfoEmail = async (req: Request, res: Response) => {  
-  return res.status(200).json({
-    success: true,
-    message: "Placeholder edit moreInfo email response"
-  });
+const editMoreInfoEmail = async (req: Request, res: Response) => {
+  const { subject, greeting, body_content } = req.body;
+
+  try {
+    const result = await pool.query(`
+      UPDATE more_info_email
+      SET
+        subject = $1,
+        greeting = $2,
+        body_content = $3,
+        modified_at = NOW()
+      WHERE id = TRUE
+      RETURNING subject, greeting, body_content, modified_at
+    `, [subject, greeting, body_content]);
+
+    if(result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "More info email not found."
+      });
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "More info email updated successfully.",
+      ...result.rows[0],
+      companyName: COMPANY_NAME,
+      copyRight: COPYRIGHT
+    });
+
+  } catch(error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error while updating more info email.",
+      error
+    });
+  };
 };
 
 
 // POST /api/moreinfo/send
+// rewrite to store footer separately and add it dynamically so I can send it in the getMoreInfoEmail response
 const sendMoreInfoEmail = async (req: Request, res: Response) => {
   const { name, email, phone, timezone = "UTC", hasSubscribed = false } = req.body;
 
@@ -84,7 +120,7 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
     const personalizedGreeting = greeting.replace("<name>", name.split(" ")[0]);
 
     const paragraphsHtml = body_content
-      .split("\\n")
+      .split("\n")
       .filter((p: string) => p.trim() !== "")
       .map((p: string, i: number, arr: string[]) => `
         <p style="
@@ -92,14 +128,14 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
           color: ${TEXT_COLOR};
           font-size: ${FONT_SIZE_BODY};
           line-height: 1.7;
-        ">${p}</p>
+        ">${linkifyForEmail(p)}</p>
       `)
       .join("");
 
     const html = buildMoreInfoEmailTemplate(personalizedGreeting, paragraphsHtml);
 
     const text = body_content
-      .split("\\n")
+      .split("\n")
       .filter((p: string) => p.trim() !== "")
       .join("\n\n");
 
@@ -163,7 +199,6 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
       });
     };
 
-    // TODO: upsert subscriber into newsletter_subscribers table
     if (hasSubscribed) {
       console.log(`${name} has subscribed`)
       // await pool.query(`
@@ -176,18 +211,17 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: "Email sent successfully",
-      hasSubscribed
+      hasSubscribed: hasSubscribed
     });
 
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Server error while sending email",
-      error
+      error: error
     });
   };
 };
-
 
 export {
   getMoreInfoEmail,
