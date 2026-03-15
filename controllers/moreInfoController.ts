@@ -9,14 +9,13 @@ import { buildMoreInfoEmailTemplate } from "../templates/moreInfoEmailTemplate";
 import { COPYRIGHT } from "../utils/constants";
 import { TEXT_COLOR, SPACING_SMALL, FONT_SIZE_BODY } from "../styling/stylingConstants"
 import { linkifyForEmail } from "../utils/utilFunctions";
+import { resend } from "../utils/resendClient";
 import pool from "../dbClient";
 
 // const JWT_SECRET = process.env.JWT_SECRET!;
 const FROM_EMAIL_ADDRESS = process.env.FROM_EMAIL_ADDRESS!
 const ADMIN_EMAIL_ADDRESS = process.env.ADMIN_EMAIL_ADDRESS!
 const COMPANY_NAME = process.env.COMPANY_NAME!
-
-const resend = new Resend(process.env.RESEND_EMAILING_API_KEY);
 
 
 // need word mark for top bar (larger), word make for footer, logo
@@ -118,6 +117,7 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
     const { subject, greeting, body_content } = result.rows[0];
 
     const personalizedGreeting = greeting.replace("<name>", name.split(" ")[0]);
+
 
     const paragraphsHtml = body_content
       .split("\n")
