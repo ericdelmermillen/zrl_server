@@ -97,7 +97,6 @@ const editMoreInfoEmail = async (req: Request, res: Response) => {
 
 
 // POST /api/moreinfo/send
-// rewrite to store footer separately and add it dynamically so I can send it in the getMoreInfoEmail response
 const sendMoreInfoEmail = async (req: Request, res: Response) => {
   const { name, email, phone, timezone = "UTC", hasSubscribed = false } = req.body;
 
@@ -117,7 +116,6 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
     const { subject, greeting, body_content } = result.rows[0];
 
     const personalizedGreeting = greeting.replace("<name>", name.split(" ")[0]);
-
 
     const paragraphsHtml = body_content
       .split("\n")
@@ -223,8 +221,67 @@ const sendMoreInfoEmail = async (req: Request, res: Response) => {
   };
 };
 
+
+// POST /api/moreinfo/sendtest
+const sendMoreInfoTestEmail = async (req: Request, res: Response) => {
+  const { name, email, subject, greeting, body_content } = req.body;
+
+  try {
+    const personalizedGreeting = greeting.replace("<name>", name.split(" ")[0]);
+
+    const paragraphsHtml = body_content
+      .split("\n")
+      .filter((p: string) => p.trim() !== "")
+      .map((p: string, i: number, arr: string[]) => `
+        <p style="
+          margin: 0 0 ${i < arr.length - 1 ? SPACING_SMALL : "40px"} 0;
+          color: ${TEXT_COLOR};
+          font-size: ${FONT_SIZE_BODY};
+          line-height: 1.7;
+        ">${linkifyForEmail(p)}</p>
+      `)
+      .join("");
+
+    const html = buildMoreInfoEmailTemplate(personalizedGreeting, paragraphsHtml);
+
+    const text = body_content
+      .split("\n")
+      .filter((p: string) => p.trim() !== "")
+      .join("\n\n");
+
+    const result = await resend.emails.send({
+      from: FROM_EMAIL_ADDRESS,
+      to: email,
+      subject: `[TEST] ${subject}`,
+      html: html,
+      text: text
+    });
+
+    if (result.error) {
+      return res.status(400).json({
+        success: false,
+        message: "Failed to send test email",
+        error: result.error
+      });
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "Test email sent successfully"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error while sending test email",
+      error: error
+    });
+  };
+};
+
 export {
   getMoreInfoEmail,
   editMoreInfoEmail,
-  sendMoreInfoEmail
+  sendMoreInfoEmail,
+  sendMoreInfoTestEmail
 };

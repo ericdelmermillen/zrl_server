@@ -66,7 +66,7 @@ const greetingIsValid = [
     .isLength({ min: 2, max: 255 })
     .withMessage('Greeting must be between 2 and 255 characters')
     .contains('<name>')
-    .withMessage('Greeting must contain "<name>"')
+    .withMessage('Greeting must contain \"<name>\"')
 ];
 
 const bodyContentIsValid = [
