@@ -236,14 +236,14 @@ const loginUser = async (req: Request, res: Response) => {
 };
 
 
-// POST /api/auth/createuser
-const logoutUser = async (req: Request, res: Response) => {
-  // const { email, password } = req.body;
-  // console.log(email, password)
-
-
-  // Placeholder response
-  res.json({message: "From logoutUser"});
+// POST /api/auth/logoutuser
+const logoutUser = (req: Request, res: Response) => {
+  clearAuthCookies(res, cookieOptions);
+  
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully"
+  });
 };
 
 
