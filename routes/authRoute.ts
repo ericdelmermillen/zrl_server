@@ -6,6 +6,7 @@ import {
   checkSessionStatus,
   logoutUser
 } from "../controllers/authController";
+import { authenticate } from "../middleware/authenticate";
 
 
 const authRouter = express.Router();
@@ -34,7 +35,7 @@ authRouter.route("/loginuser")
 
 // POST /api/auth/logoutUser
 authRouter.route("/logoutuser")
-  .post(logoutUser);
+  .post(authenticate, logoutUser);
 
   
 export default authRouter;
