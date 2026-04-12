@@ -43,7 +43,7 @@ moreInfoRouter.route('/send')
 // POST /api/moreinfo/sendtest
 moreInfoRouter.route('/sendtest')
   .post(
-    authenticate,
+    // authenticate,
     validateRequest(nameIsValid),
     validateRequest(emailIsValid),
     validateRequest(subjectIsValid),
