@@ -75,11 +75,10 @@ const setAuthCookies = (res: Response, userId: number,
 };
 
 const linkifyForEmail = (text: string): string => {
-  const urlRegex = /(https?:\/\/[^\s\[]+)(?:\[([^\]]+)\])?/g;
+  const markdownRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
 
-  return text.replace(urlRegex, (full, url, linkText) => {
-    const display = linkText ?? url;
-    return `<a href="${url}" style="color: ${PRIMARY_COLOR};" target="_blank" rel="noopener noreferrer">${display}</a>`;
+  return text.replace(markdownRegex, (match, linkText, url) => {
+    return `<a href="${url}" style="color: ${PRIMARY_COLOR}; text-decoration: underline;" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
   });
 };
 
